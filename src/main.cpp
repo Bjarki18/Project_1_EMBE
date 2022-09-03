@@ -61,6 +61,11 @@ Digital_in encoder_c1(DDD2);
 Digital_in encoder_c2(DDD3);
 Digital_out indicator(4);
 Encoder location;
+
+
+// CODE FOR UART TRANSMISSION
+// Could have used SERIAL, but that was wayy too slow so this was
+// used instead
 char TxBuffer[32];
 int indx, len;
 
