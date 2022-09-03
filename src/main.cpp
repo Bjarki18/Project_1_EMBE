@@ -46,12 +46,7 @@
 
 
 
-/*
- * main.c
- *
- *  Created on: 31. jan. 2022
- *      Author: Bjarki
- */
+
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -62,8 +57,9 @@
 #include <encoder.h>
 
 Digital_out led(5);
-Digital_in encoder_1(DDD2);
-Digital_in encoder_2(DDD3);
+Digital_in encoder_c1(DDD2);
+Digital_in encoder_c2(DDD3);
+Digital_out indicator(4);
 Encoder location;
 char TxBuffer[32];
 int indx, len;
@@ -148,45 +144,79 @@ void UART_load_charVal_in_TxBuffer(int data)
 }
 
 
+// PART 1
+// int main(){
+// 	encoder_c1.init();
+// 	encoder_c2.init();
+// 	indicator.init();
+// 	led.init();
+
+// 	bool previous_c1_state = encoder_c1.is_hi();
+// 	while (1){
+// 		_delay_us(50);
+// 		if (previous_c1_state == false && encoder_c1.is_hi()){ // if current state of c1 is high and previous state is low
+// 			indicator.set_hi();
+// 			_delay_us(10);
+
+// 			if(encoder_c2.is_hi()){ // check state of c2 and increment or decrement 
+// 				location.increment();
+// 			}
+// 			else{
+// 				location.decrement();
+// 			}
+
+// 			indicator.set_lo();
+// 			led.toggle();
+// 			}
+// 			previous_c1_state = encoder_c1.is_hi();
+// 	}
+
+// 	return 0;
+// }
+
+
+
+
+// PART 2
+
 ISR(INT1_vect)
 {
-  if (encoder_1.is_lo() && encoder_2.is_hi()){
-    location.increment();
+  
+  if (encoder_c1.is_lo() && encoder_c2.is_hi()){
+    location.decrement();
   }
 }
 
 ISR(INT0_vect)
 {
-  if (encoder_1.is_hi() && encoder_2.is_lo()){
-    location.decrement();
+	
+  if (encoder_c1.is_hi() && encoder_c2.is_lo()){
+    location.increment();
   }
+	
+	indicator.set_hi();
+	_delay_us(10);
+    indicator.set_lo();
+
+	led.toggle();
+
 }
 
 int main(){
 	Init_Uart();
-	encoder_1.init();
-  encoder_2.init();
-  led.init();
+	encoder_c1.init();
+	encoder_c2.init();
+	indicator.init();
+	led.init();
 
-	EIMSK |= (1<<INT1); // external interrupt mask register for INT1 interrupt vector
-  EIMSK |= (1<<INT0);
-	EICRA |= (1<<ISC10) | (1<<ISC11); // falling + rising edge interrupt requests 
-  EICRA |= (1<<ISC00) | (1<<ISC01);
-  // EICRA |= (1<<ISC00);
-  
-	asm("sei"); // enable interrupts
 
 	while (1){
 		
-		_delay_ms(1); // delay 1 ms
+		_delay_ms(1); // delay 1 ms for uart transmit
+
 		UART_load_charVal_in_TxBuffer(location.position()); // load encoder value to transmit
 		UART_transmit_TxBuffer(); // transmit encoder value over UART
 		reset_TxBuffer(); // reset transmit buffer
-    if(location.position() > 350){
-      led.set_hi();
-    }else{
-      led.set_lo();
-    }
 	}
 
 	return 0;
