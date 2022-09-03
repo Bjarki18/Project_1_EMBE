@@ -1,58 +1,7 @@
-// #include <avr/io.h>
-// #include <avr/interrupt.h>
-// #include <avr/delay.h>
-// #include <digital_out.h>
-
-// int encoder = 0;
-// Digital_out led(5);
-
-
-// int main(){
-//   	DDRD &= (1<<DDD3); // set pin D3 as input
-//     DDRD &= (1<<DDD2); // set pin D2 as input
-
-//     PORTD |= (1<<DDD3); // set PD3 pullup enabled
-//     EIMSK |= (1<<INT1); // external interrupt mask register for INT1 interrupt vector
-//     EICRA |= (1<<ISC10) | (1<<ISC11); // falling + rising edge interrupt requests
-//     led.init();
-//     sei();
-
-//     while(1){
-//       // if (encoder > 100){
-//       //   // led.toggle();
-//       //   // _delay_ms(100);/
-//       // }
-//       // led.set_lo();
-//       _delay_ms(1);
-//     }
-
-// }
-
-// ISR(INT1_vect)
-// {
-// 	int b = PIND & (1 << PIND2);
-// 	if (encoder >= 700 || encoder <= -700) encoder = 0;
-// 	if (b > 0){
-// 		encoder++;
-// 	}else{
-// 		encoder--;
-// 	}
-//   if (encoder < 300){
-//   led.toggle();
-//   }
-// }
-
-
-
-
-
-
-
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <avr/delay.h>
+#include <util/delay.h>
 #include <digital_out.h>
-#include <Arduino.h>
 #include <digital_in.h>
 #include <encoder.h>
 
